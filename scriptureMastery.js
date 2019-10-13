@@ -1,5 +1,5 @@
 const rp = require('request-promise');
-const $ = require('cheerio');
+const cheerio = require('cheerio');
 const scriptures = {
   'NT': [
     'Matthew 5:14-16',
@@ -15,8 +15,31 @@ const scriptures = {
   ]
 };
 
+const scripture = scriptures.NT[0];
+const book = scripture.split(' ')[0].slice(0, 4).toLowerCase();
+const chapter = scripture.split(' ')[1].split(':')[0];
+const versesStart = parseInt(scripture.split(' ')[1].split(':')[1].split('-')[0]);
+const versesEnd = parseInt(scripture.split(' ')[1].split(':')[1].split('-')[1]);
+const baseUrl = `https://www.churchofjesuschrist.org/study/scriptures/nt/${book}/${chapter}?lang=eng`;
+const options = {
+  uri: baseUrl,
+  transform: function (body) {
+    return cheerio.load(body);
+  }
+};
 // Get one scripture and count words
-const baseUrl = `https://www.churchofjesuschrist.org/study/scriptures/nt/matt/16?lang=eng`;
+rp(options)
+  .then(function($){
+    //success!
+    let scriptureText = '';
+    for (let i = versesStart; i <= versesEnd; i++) {
+      scriptureText += $(`#p${i}.verse`).text().split(' ').slice(1).join(' ') + ' ';
+    }
+    console.log(scriptureText);
+  })
+  .catch(function(err){
+    //handle error
+  });
 
 // Cycle through each scripture, make a request to churchofjesuschrist.org and get the word count for each
 // Use async await?
