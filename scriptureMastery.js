@@ -18,8 +18,9 @@ const scriptures = {
 const scripture = scriptures.NT[0];
 const book = scripture.split(' ')[0].slice(0, 4).toLowerCase();
 const chapter = scripture.split(' ')[1].split(':')[0];
-const versesStart = parseInt(scripture.split(' ')[1].split(':')[1].split('-')[0]);
-const versesEnd = parseInt(scripture.split(' ')[1].split(':')[1].split('-')[1]);
+const verses = scripture.split(' ')[1].split(':')[1].split('-');
+const versesStart = parseInt(verses[0]);
+const versesEnd = verses.length > 1 ? parseInt(verses[1]) : versesStart;
 const baseUrl = `https://www.churchofjesuschrist.org/study/scriptures/nt/${book}/${chapter}?lang=eng`;
 const options = {
   uri: baseUrl,
@@ -27,20 +28,22 @@ const options = {
     return cheerio.load(body);
   }
 };
+
 // Get one scripture and count words
 rp(options)
   .then(function($){
-    //success!
     let scriptureText = '';
     for (let i = versesStart; i <= versesEnd; i++) {
       scriptureText += $(`#p${i}.verse`).text().split(' ').slice(1).join(' ') + ' ';
     }
-    console.log(scriptureText);
+    const wordCount = scriptureText.split(' ').length;
+    const characterCount = scriptureText.split('').length;
+    console.log(scripture);
+    console.log(`Word count: ${wordCount}`);
+    console.log(`Character count: ${characterCount}`);
   })
   .catch(function(err){
     //handle error
   });
 
 // Cycle through each scripture, make a request to churchofjesuschrist.org and get the word count for each
-// Use async await?
-// use cheerio?
