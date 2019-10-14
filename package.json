@@ -1,7 +1,7 @@
 {
   "name": "scripture-mastery-word-count",
   "version": "1.0.0",
-  "description": "",
+  "description": "A quick script that takes in a list of scriptures and then scrapes churchofjesuschrist.org to get their word counts.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
